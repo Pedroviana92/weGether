@@ -1,5 +1,3 @@
 #depêndências do node
 node_modules
 
-#config do sequelize
-config
