@@ -1,4 +1,5 @@
 const { Events } = require('../models')
+const { User } = require("./../models");
 const {check, validationResult, body} = require('express-validator');
 const Sequelize = require('Sequelize')
 const Op = Sequelize.Op
@@ -26,9 +27,10 @@ module.exports = {
         res.render('home-do-evento', {eventList: newEvents})
     },
     createEvent: async (req, res) => {
-        let {nome, tema, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas} = req.body
+        let {nome, tema, descricao, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas, link_video} = req.body
         let file = req.file
         let link_imagem = file.originalname
+        let codVideo = link_video.slice(32)
         let errorList = validationResult(req)
         if(errorList.isEmpty()){
        
@@ -36,13 +38,15 @@ module.exports = {
            let newEvent = await Events.create({
                nome,
                tema,
+               descricao,
                data_inicio,
                data_fim,
                hora_inicio,
                hora_fim,
                preco,
                inicio_vendas,
-               link_imagem 
+               link_imagem,
+               link_video: codVideo 
 
            })
            res.redirect('/events/list')
@@ -54,13 +58,15 @@ module.exports = {
         let event = {
             nome,
             tema,
+            descricao,
             data_inicio,
             data_fim,
             hora_inicio,
             hora_fim,
             preco,
             inicio_vendas,
-            link_imagem 
+            link_imagem,
+            link_video 
 
         }
         res.render('registrar-evento-error', {
@@ -75,10 +81,19 @@ module.exports = {
 
         let evento = await Events.findByPk(id)
 
-        return res.render('editar-eventos', {evento})
+        let eventJson = await evento.toJSON()
+
+        let newEvent =  {
+                ...eventJson, 
+                data_inicio: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                data_fim: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                inicio_vendas: moment(eventJson.data_inicio).format('YYYY-MM-DD')
+            }
+
+        return res.render('editar-eventos', {evento: newEvent})
     },
     updateEvent: async(req, res)=> {
-        const {nome, tema, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas, link_imagem} = req.body
+        const {nome, tema, descricao, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas, link_imagem, link_video} = req.body
         const {id} = req.params
         let errorList = validationResult(req)
         if(errorList.isEmpty()){
@@ -86,13 +101,15 @@ module.exports = {
                 const resultado = await Events.update({
                    nome,
                    tema,
+                   descricao,
                    data_inicio,
                    data_fim,
                    hora_inicio,
                    hora_fim,
                    preco,
                    inicio_vendas,
-                   link_imagem
+                   link_imagem,
+                   link_video
                 }, {
                     where: {
                        id
@@ -136,7 +153,15 @@ module.exports = {
                        }
                     }
                 })
-                res.render('resultado-pesquisar', {events})
+                let eventListJson = await events.map(result=> result.toJSON())
+
+        let newEvents = eventListJson.map((event)=> {
+            return {
+                ...event, 
+                data_inicio: moment(event.data_inicio).format('DD-MM-YYYY')
+            }
+        })
+                res.render('resultado-pesquisar', {events: newEvents})
             }catch(error){
                 res.send(error)
             }
@@ -146,6 +171,44 @@ module.exports = {
             res.render('pesquisar', {errors: errorList.errors})
         }
        
+    },
+    showEvent: async(req, res, next)=> {
+        const {id} = req.params
+
+        let evento = await Events.findByPk(id)
+
+        let eventJson = await evento.toJSON()
+
+        let newEvent =  {
+                ...eventJson, 
+                data_inicio: moment(eventJson.data_inicio).format('DD-MM-YYYY'),
+                data_fim: moment(eventJson.data_inicio).format('DD-MM-YYYY')
+            }
+
+        res.render('evento', {evento: newEvent})
+    },
+    subscribe: async(req, res, next) => {
+        const {id} = req.params
+
+        let evento = await Events.findByPk(id)
+
+        let eventJson = await evento.toJSON()
+
+        let newEvent =  {
+                ...eventJson, 
+                data_inicio: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                data_fim: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                inicio_vendas: moment(eventJson.data_inicio).format('YYYY-MM-DD')
+            }
+
+        res.render('evento-acessar', {evento: newEvent})
+    },
+    acessEvent: async(req, res, next)=> {
+        const {id} = req.params
+
+        let evento = await Events.findByPk(id)
+
+        res.render('participar-evento', {evento})
     }
 
 }
