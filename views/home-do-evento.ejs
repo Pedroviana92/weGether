@@ -12,12 +12,11 @@
             <h5 class="card-title"><%= event.nome %> </h5>
             <p class="card-text">Tema: <%= event.tema %> </p>
             <p class="card-text">Começa em: <%= event.data_inicio %></p>
-            <p class="card-text">Preço: R$ <%= event.preco %>,00 </p>
           </div>
           <div class="card-body card-buttons">
-            <a href="#" class="btn btn-primary">Inscreva-se</a>
+            <a href="/events/event/<%= event.id %> " class="btn btn-primary">Saiba mais</a>
             <a href="/events/edit/<%= event.id %> " class="btn btn-secondary">Editar evento</a>
-            <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete-<%= event.id %> ">Excluir evento</a>
+            <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete-<%= event.id %>">Excluir evento</a>
 
             <div class="modal fade" id="modal-delete-<%= event.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">

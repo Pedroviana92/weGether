@@ -52,6 +52,11 @@ router.get('/searchResult', [
   check('key').isLength({min: 2}).withMessage('Sua pesquisar precisa ter pelo menos 2 letras.')
 ] ,EventController.searchResult)
 
+router.get('/event/:id', EventController.showEvent);
+
+router.get('/subscribe/:id', EventController.subscribe);
+
+router.get('/acess/:id', EventController.acessEvent)
 
 router.get('/meus-eventos', function(req, res, next) {
   res.render('meus_eventos');
@@ -60,5 +65,7 @@ router.get('/meus-eventos', function(req, res, next) {
 router.get('/trilha', function(req, res, next){
   res.render('trilha')
 });
+
+
 
 module.exports = router;

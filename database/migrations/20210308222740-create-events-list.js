@@ -10,6 +10,7 @@ module.exports = {
       },
       nome: DataType.STRING,
       tema: DataType.STRING,
+      descricao: DataType.STRING,
       data_inicio: DataType.STRING,
       data_fim: DataType.STRING,
       hora_inicio: DataType.STRING,
@@ -17,6 +18,7 @@ module.exports = {
       preco: DataType.STRING,
       inicio_vendas: DataType.STRING,
       link_imagem: DataType.STRING,
+      link_video: DataType.STRING,
       createdAt:{
         type: DataType.DATE
       },
