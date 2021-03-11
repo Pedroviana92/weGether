@@ -28,8 +28,12 @@ module.exports = {
     },
     createEvent: async (req, res) => {
         let {nome, tema, descricao, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas, link_video} = req.body
-        let file = req.file
-        let link_imagem = file.originalname
+        if(!req.file){
+            req.file = {
+                originalname: 'Logo-weGether.jpg'
+            }
+        }
+        link_imagem = req.file.originalname
         let codVideo = link_video.slice(32)
         let errorList = validationResult(req)
         if(errorList.isEmpty()){
@@ -95,6 +99,7 @@ module.exports = {
     updateEvent: async(req, res)=> {
         const {nome, tema, descricao, data_inicio, data_fim, hora_inicio, hora_fim, preco, inicio_vendas, link_imagem, link_video} = req.body
         const {id} = req.params
+        let codVideo = link_video.slice(32)
         let errorList = validationResult(req)
         if(errorList.isEmpty()){
             try {
@@ -109,7 +114,7 @@ module.exports = {
                    preco,
                    inicio_vendas,
                    link_imagem,
-                   link_video
+                   link_video: codVideo
                 }, {
                     where: {
                        id
@@ -123,7 +128,16 @@ module.exports = {
             }
         } else {
             const evento = await Events.findByPk(id)
-            res.render('editar-eventos', {evento: evento,
+            let eventJson = await evento.toJSON()
+
+        let newEvent =  {
+                ...eventJson, 
+                data_inicio: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                data_fim: moment(eventJson.data_inicio).format('YYYY-MM-DD'),
+                inicio_vendas: moment(eventJson.data_inicio).format('YYYY-MM-DD')
+            }
+            
+            res.render('editar-eventos', {evento: newEvent,
             errors: errorList.errors})
         }
             
